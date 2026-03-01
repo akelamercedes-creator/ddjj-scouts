@@ -533,7 +533,7 @@ async function buildPDF() {
 // Enviamos como text/plain para evitar preflight OPTIONS.
 // ── BASE64 ────────────────────────────────────────────────────────
 function toBase64(uint8) {
-  var b64 = '', chunk = 8192;
+  var b64 = '', chunk = 8190; // MUST be divisible by 3 to avoid padding corruption
   for (var i = 0; i < uint8.length; i += chunk)
     b64 += btoa(String.fromCharCode.apply(null, uint8.subarray(i, i + chunk)));
   return b64;
@@ -561,7 +561,7 @@ async function uploadToDrive(pdfBytes, filename) {
   if (!postResp.ok) throw new Error('POST falló: HTTP ' + postResp.status);
 
   var json = await postResp.json();
-  if (!json.success) throw new Error(json.error || JSON.stringify(json));
+  if (!json.success) throw new Error('[Script] ' + (json.error || json.step || JSON.stringify(json)));
 
   return json.url;
 }
