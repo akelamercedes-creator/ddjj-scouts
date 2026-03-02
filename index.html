@@ -811,38 +811,41 @@ function dlLocal() {
 // ══════════════════════════════════════════════════════════
 
 const REQUIRED_FIELDS = [
-  {id:'apellido',    label:'Apellido'},
-  {id:'nombre',      label:'Nombre'},
-  {id:'fechaNac',    label:'Fecha de Nacimiento'},
-  {id:'dni',         label:'D.N.I.'},
-  {id:'zona',        label:'N° Zona'},
-  {id:'distrito',    label:'N° Distrito'},
-  {id:'grupo',       label:'N° Grupo'},
-  {id:'domicilio',   label:'Domicilio'},
-  {id:'tel1',        label:'Telefono Emergencia 1'},
-  {id:'grupoSang',   label:'Grupo Sanguineo'},
-  {id:'factorRH',    label:'Factor RH'},
-  {id:'peso',        label:'Peso'},
-  {id:'talla',       label:'Talla'},
-  {id:'obraSocial',  label:'Obra Social'},
-  {id:'credencial',  label:'Credencial N'},
-  {id:'telObraSocial',label:'Tel. Obra Social'},
-  {id:'firmaNombre', label:'Aclaracion (firmante)'},
-  {id:'firmaDNI',    label:'DNI del firmante'},
-  {id:'firmaFecha',  label:'Fecha de firma'},
+  {id:'apellido',      label:'Apellido'},
+  {id:'nombre',        label:'Nombre'},
+  {id:'fechaNac',      label:'Fecha de Nacimiento'},
+  {id:'dni',           label:'D.N.I.'},
+  {id:'zona',          label:'N Zona'},
+  {id:'distrito',      label:'N Distrito'},
+  {id:'grupo',         label:'N Grupo'},
+  {id:'domicilio',     label:'Domicilio'},
+  {id:'tel1',          label:'Telefono Emergencia 1'},
+  {id:'grupoSang',     label:'Grupo Sanguineo'},
+  {id:'factorRH',      label:'Factor RH'},
+  {id:'peso',          label:'Peso'},
+  {id:'talla',         label:'Talla'},
+  {id:'obraSocial',    label:'Obra Social'},
+  {id:'credencial',    label:'Credencial N'},
+  {id:'telObraSocial', label:'Tel. Obra Social'},
+  {id:'firmaNombre',   label:'Aclaracion firmante'},
+  {id:'firmaDNI',      label:'DNI del firmante'},
+  {id:'firmaFecha',    label:'Fecha de firma'},
 ];
 
 function validarCampos() {
   var errores = [];
   var hoy = new Date();
+  hoy.setHours(23,59,59,999);
   var min = new Date('1930-01-01');
 
   REQUIRED_FIELDS.forEach(function(f) {
-    var val = gv(f.id);
-    if (!val) { errores.push(f.label + ': campo obligatorio'); return; }
-    // Validar fechas
-    if (f.id === 'fechaNac' || f.id === 'firmaFecha' ||
-        f.id === 'controlMedico') {
+    var el = document.getElementById(f.id);
+    var val = el ? el.value.trim() : '';
+    if (!val) {
+      errores.push(f.label + ': campo obligatorio');
+      return;
+    }
+    if (f.id === 'fechaNac' || f.id === 'firmaFecha') {
       var d = new Date(val);
       if (isNaN(d.getTime())) { errores.push(f.label + ': fecha invalida'); return; }
       if (d > hoy) { errores.push(f.label + ': no puede ser fecha futura'); return; }
@@ -850,11 +853,12 @@ function validarCampos() {
     }
   });
 
-  // Vacunas — al menos una fecha O uno de los checkboxes marcado
-  var hayVacuna = gv('vacQuintuple') || gv('vacTripleC') || gv('vacTripleA') || gv('vacDoble')
-               || document.getElementById('sinVac').checked
-               || document.getElementById('noSabeVac').checked;
-  if (!hayVacuna) errores.push('Vacunas: complete al menos una fecha o marque la opcion correspondiente');
+  var hayVacuna = gv('vacQuintuple') || gv('vacTripleC') || gv('vacTripleA') || gv('vacDoble');
+  var sinVacEl   = document.getElementById('sinVac');
+  var noSabeVacEl= document.getElementById('noSabeVac');
+  if (!hayVacuna && !(sinVacEl && sinVacEl.checked) && !(noSabeVacEl && noSabeVacEl.checked)) {
+    errores.push('Vacunas: complete al menos una fecha o marque la opcion');
+  }
 
   return errores;
 }
@@ -862,31 +866,40 @@ function validarCampos() {
 function validarYMostrarJuramento() {
   var errores = validarCampos();
   if (errores.length > 0) {
-    toast('Campos incompletos:
-' + errores.slice(0,3).join('
-') + (errores.length>3 ? '
-... y ' + (errores.length-3) + ' mas' : ''), true);
-    // Highlight first missing field
-    var firstId = null;
-    REQUIRED_FIELDS.forEach(function(f) { if (!firstId && !gv(f.id)) firstId = f.id; });
-    if (firstId) {
-      var el = document.getElementById(firstId);
-      if (el) { el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.borderColor='#DC2626'; setTimeout(function(){ el.style.borderColor=''; }, 3000); }
+    var msg = 'Campos incompletos (' + errores.length + '):\n' +
+              errores.slice(0,4).join('\n') +
+              (errores.length > 4 ? '\n...y ' + (errores.length-4) + ' mas' : '');
+    toast(msg, true);
+
+    // Scroll y marcar el primer campo faltante
+    for (var i = 0; i < REQUIRED_FIELDS.length; i++) {
+      var el = document.getElementById(REQUIRED_FIELDS[i].id);
+      if (el && !el.value.trim()) {
+        el.focus();
+        el.scrollIntoView({behavior:'smooth', block:'center'});
+        el.style.outline = '2px solid #DC2626';
+        el.style.boxShadow = '0 0 0 3px rgba(220,38,38,.2)';
+        (function(elem){ setTimeout(function(){
+          elem.style.outline = '';
+          elem.style.boxShadow = '';
+        }, 3000); })(el);
+        break;
+      }
     }
     return;
   }
-  // Todo OK — mostrar modal de juramento
+  // Campos OK — mostrar modal de declaracion jurada
   document.getElementById('jurCheck').checked = false;
   toggleJurBtn();
   document.getElementById('jurOv').classList.add('open');
 }
 
 function toggleJurBtn() {
-  var btn = document.getElementById('jurConfirm');
+  var btn     = document.getElementById('jurConfirm');
   var checked = document.getElementById('jurCheck').checked;
-  btn.style.opacity    = checked ? '1'           : '.45';
-  btn.style.cursor     = checked ? 'pointer'     : 'not-allowed';
-  btn.style.pointerEvents = checked ? 'auto'     : 'none';
+  btn.style.opacity      = checked ? '1'       : '.45';
+  btn.style.cursor       = checked ? 'pointer' : 'not-allowed';
+  btn.style.pointerEvents= checked ? 'auto'    : 'none';
 }
 
 function confirmarJuramento() {
