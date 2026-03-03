@@ -10,8 +10,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
-  --g:   #1B4332; --gm: #2D6A4F; --gl: #40916C; --gp: #D8F3DC;
-  --gd:  #74C69D; --gold: #F4A522; --gold-dk: #C47D0A;
+  --g:   #21a9eb; --gm: #1a8bc4; --gl: #7dd3f7; --gp: #e0f4fd;
+  --gd:  #7dd3f7; --gold: #F4A522; --gold-dk: #C47D0A;
   --ink: #0F1F17; --ink2: #344A3C; --ink3: #5C7566;
   --bg:  #F6FAF7; --card: #FFFFFF; --bdr: #D4E6DB;
   --r: 14px; --rs: 8px;
@@ -53,8 +53,8 @@ body{font-family:var(--fb);background:var(--bg);color:var(--ink);min-height:100v
 .sdiv{width:28px;height:2px;background:var(--bdr);flex-shrink:0;}
 
 /* DRIVE BADGE */
-.drive-badge{display:flex;align-items:center;gap:12px;background:#D8F3DC;
-  border:1.5px solid #74C69D;border-radius:var(--r);padding:13px 18px;margin-bottom:22px;}
+.drive-badge{display:flex;align-items:center;gap:12px;background:#e0f4fd;
+  border:1.5px solid #7dd3f7;border-radius:var(--r);padding:13px 18px;margin-bottom:22px;}
 .drive-badge-icon{font-size:1.3rem;}
 .drive-badge-t{font-size:.87rem;font-weight:700;color:var(--g);}
 .drive-badge-s{font-size:.75rem;color:var(--gm);margin-top:2px;}
@@ -105,7 +105,7 @@ textarea{resize:vertical;min-height:54px;}
 
 /* VACCINE */
 .vt{width:100%;border-collapse:collapse;font-size:.87rem;}
-.vt th{background:#EEF5F1;padding:8px 12px;text-align:left;font-weight:700;
+.vt th{background:#e8f6fd;padding:8px 12px;text-align:left;font-weight:700;
   color:var(--ink2);border-bottom:2px solid var(--bdr);}
 .vt td{padding:7px 12px;border-bottom:1px solid var(--bdr);vertical-align:middle;}
 .cbrow{display:flex;align-items:center;gap:7px;margin-top:7px;}
@@ -189,7 +189,7 @@ textarea{resize:vertical;min-height:54px;}
 .btn-c.gho{background:transparent;color:var(--ink3);border:1.5px solid var(--bdr);}
 .btn-c.gho:hover{background:var(--bg);}
 
-.dl-link{display:flex;align-items:center;gap:8px;background:#EEF5F1;
+.dl-link{display:flex;align-items:center;gap:8px;background:#e8f6fd;
   border-radius:var(--rs);padding:10px 13px;margin-top:4px;text-decoration:none;
   color:var(--g);font-size:.8rem;font-weight:600;border:1.5px solid var(--bdr);
   transition:background .15s;word-break:break-all;}
@@ -433,9 +433,9 @@ textarea{resize:vertical;min-height:54px;}
     <div style="margin:16px 0;padding:16px;background:#F6FAF7;border-radius:10px;border:1.5px solid #D4E6DB;font-size:.9rem;line-height:1.7">
       Declaro que los datos que he proporcionado son fidedignos y carecen de sesgo.
     </div>
-    <label id="jurLabel" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px;background:#EEF5F1;border-radius:10px;border:1.5px solid #74C69D;">
-      <input type="checkbox" id="jurCheck" onchange="toggleJurBtn()" style="width:22px;height:22px;accent-color:#1B4332;cursor:pointer;flex-shrink:0;">
-      <span style="font-size:.88rem;font-weight:600;color:#1B4332;">Acepto y confirmo que los datos son veridicos</span>
+    <label id="jurLabel" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px;background:#e8f6fd;border-radius:10px;border:1.5px solid #7dd3f7;">
+      <input type="checkbox" id="jurCheck" onchange="toggleJurBtn()" style="width:22px;height:22px;accent-color:#21a9eb;cursor:pointer;flex-shrink:0;">
+      <span style="font-size:.88rem;font-weight:600;color:#21a9eb;">Acepto y confirmo que los datos son veridicos</span>
     </label>
     <div class="ma" style="margin-top:16px">
       <button class="btn-c pri" id="jurConfirm" onclick="confirmarJuramento()" style="opacity:.45;cursor:not-allowed;pointer-events:none">Confirmar y guardar</button>
@@ -529,7 +529,7 @@ function setStep(n) {
 function toast(msg, isErr) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.style.background = isErr ? '#7F1D1D' : '#1B4332';
+  t.style.background = isErr ? '#7F1D1D' : '#21a9eb';
   t.classList.add('on');
   setTimeout(() => t.classList.remove('on'), 4500);
 }
@@ -543,15 +543,34 @@ async function buildPDF() {
   const {width, height} = page.getSize();
   const font      = await doc.embedFont(StandardFonts.Helvetica);
   const fontItal  = await doc.embedFont(StandardFonts.TimesRomanBoldItalic);
-  const fs = 8.5, col = rgb(0,0,0), cc = rgb(0.11,0.42,0.31);
+  const fs = 8.5, col = rgb(0,0,0), cc = rgb(0.13,0.66,0.92);
 
   const py  = top => height - top - fs + 1.5;
   // dt(text, x, y, maxWidth?)  — fuente normal
   const dt  = (txt, x, y, mw) => { if (!txt) return;
     page.drawText(String(txt), {x, y, size:fs, font, color:col, maxWidth:mw||200}); };
-  // dtI(text, x, y, size, maxWidth?)  — fuente italica (firma)
-  const dtI = (txt, x, y, sz, mw) => { if (!txt) return;
-    page.drawText(String(txt), {x, y, size:sz||12, font:fontItal, color:col, maxWidth:mw||200}); };
+  // dtI — firma cursiva con canvas + Dancing Script (aspecto tinta real)
+  const dtI = async (txt, x, y, sz, mw) => {
+    if (!txt) return;
+    const scale = 3;
+    const fSize = (sz||12) * scale;
+    const maxW  = (mw||210) * scale;
+    const cvs   = document.createElement('canvas');
+    cvs.width   = maxW;
+    cvs.height  = Math.ceil(fSize * 1.8);
+    const ctx   = cvs.getContext('2d');
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    ctx.font         = fSize + 'px "Dancing Script", cursive';
+    ctx.fillStyle    = '#000000';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(txt, 4, fSize * 1.2, maxW - 8);
+    const pngB64  = cvs.toDataURL('image/png').split(',')[1];
+    const pngBytes= Uint8Array.from(atob(pngB64), c => c.charCodeAt(0));
+    const pngImg  = await doc.embedPng(pngBytes);
+    const imgW = cvs.width / scale;
+    const imgH = cvs.height / scale;
+    page.drawImage(pngImg, { x, y: y - imgH * 0.35, width: imgW, height: imgH });
+  };
   const ell = (cx, cy) => page.drawEllipse({x:cx, y:cy, xScale:7.5, yScale:5.5,
     borderColor:cc, borderWidth:1.5, opacity:1, borderOpacity:1});
 
@@ -580,7 +599,7 @@ async function buildPDF() {
   // Vacunas
   ['vacQuintuple','vacTripleC','vacTripleA','vacDoble'].forEach((id,i)=>{
     const tops=[383.7,394.9,406.3,417.6]; const p=fdp(gv(id));
-    if(p.d) dt(p.d,193,py(tops[i])); if(p.m) dt(p.m,216,py(tops[i])); if(p.y) dt(p.y,239,py(tops[i]));
+    if(p.d) dt(p.d,193,py(tops[i])); if(p.m) dt(p.m,213,py(tops[i])); if(p.y) dt(p.y,232,py(tops[i]),35);
   });
 
   // Preguntas (círculos)
@@ -617,8 +636,8 @@ async function buildPDF() {
 
   // Firma — nombre/apellido en cursiva (simula firma) + aclaración normal
   const firmaCompleta = (gv('apellido')||'') + ', ' + (gv('nombre')||'');
-  dtI(firmaCompleta, 358, py(724), 13, 210);
-  dt(gv('firmaNombre'), 383,py(739),175);
+  await dtI(firmaCompleta, 358, py(717), 11, 210);
+  dt(gv('firmaNombre'), 383,py(737),170);
   dt(gv('firmaDNI'),    358,py(754),95);
   const ff=fdp(gv('firmaFecha'));
   dt(ff.d,494,py(753.7)); dt(ff.m,522,py(753.7)); dt(ff.y,550,py(753.7));
@@ -771,7 +790,7 @@ async function mostrarCredencial(driveUrl) {
   new QRCode(qrc, {
     text:  driveUrl || window.location.href,
     width: 88, height: 88,
-    colorDark:'#1B4332', colorLight:'#FFFFFF',
+    colorDark:'#21a9eb', colorLight:'#FFFFFF',
     correctLevel: QRCode.CorrectLevel.M
   });
 
@@ -840,32 +859,59 @@ function validarCampos() {
   var errores = [];
   var hoy = new Date();
   hoy.setHours(23,59,59,999);
-  var min = new Date('1930-01-01');
+  var min = new Date("1930-01-01");
+
+  // Auto-completar fecha de firma con hoy si esta vacia
+  var ffEl = document.getElementById("firmaFecha");
+  if (ffEl && !ffEl.value) {
+    var n = new Date();
+    ffEl.value = n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
+  }
+
+  // Fecha de nacimiento para validar vacunas
+  var fechaNacVal = gv("fechaNac");
+  var fechaNac = fechaNacVal ? new Date(fechaNacVal) : null;
 
   REQUIRED_FIELDS.forEach(function(f) {
     var el = document.getElementById(f.id);
-    var val = el ? el.value.trim() : '';
-    if (!val) {
-      errores.push(f.label + ': campo obligatorio');
-      return;
-    }
-    if (f.id === 'fechaNac' || f.id === 'firmaFecha') {
+    var val = el ? el.value.trim() : "";
+    if (!val) { errores.push(f.label + ": campo obligatorio"); return; }
+    if (f.id === "fechaNac") {
       var d = new Date(val);
-      if (isNaN(d.getTime())) { errores.push(f.label + ': fecha invalida'); return; }
-      if (d > hoy) { errores.push(f.label + ': no puede ser fecha futura'); return; }
-      if (d < min) { errores.push(f.label + ': debe ser posterior a 1930'); return; }
+      if (isNaN(d)) { errores.push(f.label + ": fecha invalida"); return; }
+      if (d > hoy)  { errores.push(f.label + ": no puede ser fecha futura"); return; }
+      if (d < min)  { errores.push(f.label + ": debe ser posterior a 1930"); return; }
+    }
+    if (f.id === "firmaFecha") {
+      var d = new Date(val);
+      if (isNaN(d)) { errores.push(f.label + ": fecha invalida"); return; }
+      if (d > hoy)  { errores.push(f.label + ": no puede ser fecha futura"); return; }
     }
   });
 
-  var hayVacuna = gv('vacQuintuple') || gv('vacTripleC') || gv('vacTripleA') || gv('vacDoble');
-  var sinVacEl   = document.getElementById('sinVac');
-  var noSabeVacEl= document.getElementById('noSabeVac');
-  if (!hayVacuna && !(sinVacEl && sinVacEl.checked) && !(noSabeVacEl && noSabeVacEl.checked)) {
-    errores.push('Vacunas: complete al menos una fecha o marque la opcion');
+  // Validar fechas de vacunas
+  var vacIds    = ["vacQuintuple","vacTripleC","vacTripleA","vacDoble"];
+  var vacLabels = ["Quintuple","Triple Cel.","Triple Acel.","Doble"];
+  var hayVacuna = false;
+  vacIds.forEach(function(id,i) {
+    var val = gv(id); if (!val) return;
+    hayVacuna = true;
+    var d = new Date(val);
+    if (isNaN(d))        { errores.push("Vacuna " + vacLabels[i] + ": fecha invalida"); return; }
+    if (d > hoy)         { errores.push("Vacuna " + vacLabels[i] + ": no puede ser futura"); }
+    if (fechaNac && d < fechaNac) { errores.push("Vacuna " + vacLabels[i] + ": debe ser posterior al nacimiento"); }
+    if (d < min)         { errores.push("Vacuna " + vacLabels[i] + ": debe ser posterior a 1930"); }
+  });
+
+  var sinVac   = document.getElementById("sinVac");
+  var noSabeVac= document.getElementById("noSabeVac");
+  if (!hayVacuna && !(sinVac&&sinVac.checked) && !(noSabeVac&&noSabeVac.checked)) {
+    errores.push("Vacunas: complete al menos una fecha o marque la opcion");
   }
 
   return errores;
 }
+
 
 function validarYMostrarJuramento() {
   var errores = validarCampos();
