@@ -546,8 +546,12 @@ async function buildPDF() {
   const fs = 8.5, col = rgb(0,0,0), cc = rgb(0.11,0.42,0.31);
 
   const py  = top => height - top - fs + 1.5;
-  const dt  = (txt, x, y, mw, f2, sz) => { if (!txt) return;
-    page.drawText(String(txt), {x, y, size:sz||fs, font:f2||font, color:col, maxWidth:mw||200}); };
+  // dt(text, x, y, maxWidth?)  — fuente normal
+  const dt  = (txt, x, y, mw) => { if (!txt) return;
+    page.drawText(String(txt), {x, y, size:fs, font, color:col, maxWidth:mw||200}); };
+  // dtI(text, x, y, size, maxWidth?)  — fuente italica (firma)
+  const dtI = (txt, x, y, sz, mw) => { if (!txt) return;
+    page.drawText(String(txt), {x, y, size:sz||12, font:fontItal, color:col, maxWidth:mw||200}); };
   const ell = (cx, cy) => page.drawEllipse({x:cx, y:cy, xScale:7.5, yScale:5.5,
     borderColor:cc, borderWidth:1.5, opacity:1, borderOpacity:1});
 
@@ -596,26 +600,26 @@ async function buildPDF() {
     if(v==='SI') ell(si,cy); else if(v==='NO') ell(no,cy);
   });
 
-  dt(gv('medicacionCual'),   72,py(472),fs,220);
-  dt(gv('enfermedadCual'),   72,py(507),fs,220);
-  dt(gv('requiereTratCual'), 72,py(537),fs,220);
-  dt(gv('alergiaCual'),      72,py(577),fs,220);
-  dt(gv('anticoagCual'),     72,py(598),fs,220);
-  dt(gv('dietaCual'),        72,py(628),fs,220);
-  dt(gv('panicoBFrecuencia'),72,py(663),fs,220);
-  dt(gv('saludMentalCual'),  72,py(712),fs,220);
-  dt(gv('saludMentalTrat'), 183,py(725),fs,110);
+  dt(gv('medicacionCual'),   72,py(472),220);
+  dt(gv('enfermedadCual'),   72,py(507),220);
+  dt(gv('requiereTratCual'), 72,py(537),220);
+  dt(gv('alergiaCual'),      72,py(577),220);
+  dt(gv('anticoagCual'),     72,py(598),220);
+  dt(gv('dietaCual'),        72,py(628),220);
+  dt(gv('panicoBFrecuencia'),72,py(663),220);
+  dt(gv('saludMentalCual'),  72,py(712),220);
+  dt(gv('saludMentalTrat'), 183,py(725),110);
 
   // Obra social
-  dt(gv('obraSocial'),  432,py(555),fs,130);
-  dt(gv('credencial'),  398,py(574.1),fs,160);
-  dt(gv('telObraSocial'),456,py(595),fs,100);
+  dt(gv('obraSocial'),  432,py(555),130);
+  dt(gv('credencial'),  398,py(574.1),160);
+  dt(gv('telObraSocial'),456,py(595),100);
 
   // Firma — nombre/apellido en cursiva (simula firma) + aclaración normal
   const firmaCompleta = (gv('apellido')||'') + ', ' + (gv('nombre')||'');
-  dt(firmaCompleta, 358, py(724), 210, fontItal, 13);
-  dt(gv('firmaNombre'), 383,py(739),fs,175);
-  dt(gv('firmaDNI'),    358,py(754),fs,95);
+  dtI(firmaCompleta, 358, py(724), 13, 210);
+  dt(gv('firmaNombre'), 383,py(739),175);
+  dt(gv('firmaDNI'),    358,py(754),95);
   const ff=fdp(gv('firmaFecha'));
   dt(ff.d,494,py(753.7)); dt(ff.m,522,py(753.7)); dt(ff.y,550,py(753.7));
 
